@@ -1,3 +1,13 @@
+const readFiles = () => {
+    const testFolder = './images/';
+    const fs = require('fs');
+    const path = require('path');
+
+    const dirName = path.dirname(__filename);
+
+    return fs.readdirSync(testFolder).map(file => path.join(dirName, testFolder, file))
+}
+
 const generateCards = (r, n) => {
     let result = [];
     
@@ -28,5 +38,36 @@ const generateCards = (r, n) => {
     return result;
 }
 
-console.log(generateCards(1, 7));
+const random = (min = 1, max = 4) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+
+const cards = generateCards(1, 3);
+const images = readFiles();
+
+console.log(`Cards (Images Needed): ${cards.length}`);
+console.log(`Images: ${images.length}`);
+
+console.log(cards);
+console.log(cards.length)
+
+const width = 160;
+
+const css = content => () => `style="${typeof content === "function" ? content() : content}"`;
+
+const imageCss = css(() => `width: ${width}px; height: ${width}; max-height: ${width}px; transform: rotate(${random()*90}deg);`)
+const cardCss = css(`page-break-inside: avoid; width: ${2*width}; border: 1px solid; display:grid; grid-template-columns: 50% 50%;`)
+
+const itemTemplate = (number) => `
+    <div><img ${imageCss()} src="${images[number-1]}"></div>
+`
+const cardTemplate = (content) => `
+    <div ${cardCss()}>
+    ${content}
+    </div> 
+`
+
+
+fs = require('fs');
+fs.writeFileSync("output.html", cards.map(card => cardTemplate(card.map(itemTemplate).join(''))).join(''));
+
 
